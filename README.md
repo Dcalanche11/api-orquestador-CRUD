@@ -3,6 +3,13 @@
 Aplicación de gestión de empleados con backend REST y frontend React, siguiendo
 el documento de arquitectura proporcionado. Incluye autenticación, roles y CRUD completo.
 
+## Descargar y ejecutar
+
+[Descargar los paquetes Docker de PDGE 1.0.0](https://github.com/Dcalanche11/api-orquestador-CRUD/releases/tag/v1.0.0).
+Elija `amd64` para Intel/AMD o `arm64` para Apple Silicon. Cada ZIP incluye las
+imágenes y un README con los pasos de instalación. Solo se necesita Docker con
+Compose v2; se crea una base vacía y un usuario propio.
+
 ## Estructura
 
 ```text

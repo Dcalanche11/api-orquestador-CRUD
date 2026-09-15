@@ -33,10 +33,23 @@ y crea su administrador al instalar. La licencia OFL-1.1 de Montserrat se incluy
 
 ## Entregar
 
-Comparta el ZIP correspondiente y solicite seguir su `README.md`.
+Las entregas están en [GitHub Releases](https://github.com/Dcalanche11/api-orquestador-CRUD/releases/tag/v1.0.0).
+Comparta el enlace o el ZIP correspondiente y solicite seguir su `README.md`.
 Los ZIP son artefactos de entrega, no archivos para subir mediante Git. Pueden
 adjuntarse a una versión en GitHub Releases o compartirse por el medio elegido.
 
 La aplicación se sirve en localhost. Publicar el repositorio no publica la aplicación
 ni la base de datos en Internet. Trasladar datos reales requeriría un respaldo de
 PostgreSQL y un proceso adicional de restauración.
+
+## Validación de la entrega 1.0.0
+
+Ambos ZIP se extrajeron en carpetas temporales y se comprobaron sus sumas SHA-256.
+Se cargaron las imágenes y se inició cada Compose en un proyecto aislado con
+volúmenes nuevos. Se verificaron la generación y conservación de `.env`, las
+migraciones, la creación del administrador mediante la CLI, el login a través del
+frontend, el alta/consulta/borrado de una ficha y el resumen del dashboard.
+
+ARM64 se ejecutó de forma nativa en Apple Silicon; AMD64 mediante emulación de
+Docker Desktop. No se ejecutó el instalador PowerShell en un equipo Windows físico.
+Las pruebas se eliminaron al terminar y los servicios originales permanecieron activos.
