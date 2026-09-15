@@ -1,0 +1,9 @@
+$kind: collection
+scripts:
+  - type: http:beforeRequest
+    code: |-
+      if (!pm.environment.get("viewer_username") || !pm.environment.get("viewer_password")) {
+          pm.execution.skipRequest();
+      }
+    language: text/javascript
+order: 4000

@@ -1,0 +1,22 @@
+name: Empleados — Local
+values:
+  - key: base_url
+    value: 'http://localhost:8000'
+  - key: admin_username
+    value: admin
+  - key: admin_password
+    value: ''
+  - key: viewer_username
+    value: consulta
+  - key: viewer_password
+    value: ''
+  - key: viewer_access_token
+    value: ''
+  - key: demo_dpi
+    value: ''
+  - key: demo_nit
+    value: ''
+  - key: admin_access_token
+    value: ''
+  - key: employee_id
+    value: ''

@@ -1,0 +1,74 @@
+name: pdge
+
+x-api: &api
+  image: pdge-api:@VERSION@-@ARCH@
+  platform: linux/@ARCH@
+  pull_policy: never
+  environment:
+    DATABASE_URL: postgresql+psycopg://employees:${POSTGRES_PASSWORD:?Ejecute init.sh o init.ps1}@db:5432/employees
+    JWT_SECRET: ${JWT_SECRET:?Ejecute init.sh o init.ps1}
+    CORS_ORIGINS: '["http://localhost:${WEB_PORT:-5173}"]'
+    RATE_LIMIT_STORAGE_URI: redis://redis:6379/0
+
+services:
+  web:
+    image: pdge-web:@VERSION@-@ARCH@
+    platform: linux/@ARCH@
+    pull_policy: never
+    ports:
+      - "127.0.0.1:${WEB_PORT:-5173}:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:8080/"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  db:
+    image: pdge-postgres:17-@ARCH@
+    platform: linux/@ARCH@
+    pull_policy: never
+    environment:
+      POSTGRES_DB: employees
+      POSTGRES_USER: employees
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Ejecute init.sh o init.ps1}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  redis:
+    image: pdge-redis:7-@ARCH@
+    platform: linux/@ARCH@
+    pull_policy: never
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  migrate:
+    <<: *api
+    command: ["alembic", "upgrade", "head"]
+    depends_on:
+      db:
+        condition: service_healthy
+  api:
+    <<: *api
+    ports:
+      - "127.0.0.1:${API_PORT:-8000}:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/ready')"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  postgres_data:

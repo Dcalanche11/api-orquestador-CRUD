@@ -1,0 +1,16 @@
+$kind: http-request
+name: "10 Confirmar eliminación: 404"
+description: ""
+url: "{{base_url}}/api/v1/employees/{{deleted_employee_id}}"
+method: GET
+scripts:
+  - type: beforeRequest
+    code: |-
+      if (!pm.environment.get("deleted_employee_id")) {
+          pm.execution.skipRequest(); throw new Error("Primero ejecute 09 Eliminar empleado de prueba.");
+      }
+    language: text/javascript
+  - type: afterResponse
+    code: pm.test("HTTP 404", () => pm.response.to.have.status(404));
+    language: text/javascript
+order: 2000

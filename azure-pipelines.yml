@@ -1,0 +1,39 @@
+trigger:
+  branches:
+    include: [main]
+
+# Azure Repos: vincular este pipeline como Build Validation obligatorio de main.
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.14'
+    displayName: Python 3.14
+
+  - script: |
+      python -m pip install -r backend/requirements-dev.txt
+      python -m pip install --no-deps -e backend
+    displayName: Instalar dependencias fijadas
+
+  - script: |
+      ruff check backend scripts
+      ruff format --check backend scripts
+    displayName: Lint y formato
+
+  - script: |
+      python scripts/init_env.py
+      docker compose up -d --wait db redis
+      python scripts/test_postgres.py
+    displayName: Pruebas, migraciones PostgreSQL y cobertura mayor a 80%
+
+  - task: PublishCodeCoverageResults@2
+    condition: succeededOrFailed()
+    inputs:
+      summaryFileLocation: '$(System.DefaultWorkingDirectory)/backend/coverage.xml'
+    displayName: Publicar cobertura
+
+  - script: docker compose down
+    condition: always()
+    displayName: Detener servicios de CI

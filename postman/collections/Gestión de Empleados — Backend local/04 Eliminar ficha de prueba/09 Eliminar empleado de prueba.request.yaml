@@ -1,0 +1,23 @@
+$kind: http-request
+description: Elimina el empleado indicado por employee_id y sus direcciones/salario. Conserva auditoría. Omitir esta carpeta si desea conservar la ficha para observarla en SQL.
+url: "{{base_url}}/api/v1/employees/{{employee_id}}"
+method: DELETE
+scripts:
+  - type: beforeRequest
+    code: |-
+      if (!pm.environment.get("employee_id")) {
+          pm.execution.setNextRequest(null);
+          pm.execution.skipRequest();
+          throw new Error("Primero ejecute 02 Crear empleado; falta employee_id.");
+      }
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test("HTTP 204", () => pm.response.to.have.status(204));
+      if (pm.response.code === 204) {
+          pm.environment.set("deleted_employee_id", pm.environment.get("employee_id"));
+          pm.environment.unset("employee_id");
+          pm.test("Respuesta sin cuerpo", () => pm.expect(pm.response.text()).to.eql(""));
+      } else { pm.execution.setNextRequest(null); }
+    language: text/javascript
+order: 1000

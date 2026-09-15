@@ -1,0 +1,9 @@
+workspace:
+  id: 151f6c95-4543-4cc8-86a3-3e501d3a2013
+
+localResources:
+  specs:
+    - ../docs/openapi.json
+resourceNameMappings:
+  specs:
+    - ../docs/openapi.json: openapi.json

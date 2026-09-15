@@ -1,0 +1,14 @@
+$kind: http-request
+name: "Consulta puede listar: 200"
+description: ""
+url: "{{base_url}}/api/v1/employees"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{viewer_access_token}}"
+scripts:
+  - type: afterResponse
+    code: pm.test("HTTP 200", () => pm.response.to.have.status(200));
+    language: text/javascript
+order: 2000

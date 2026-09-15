@@ -1,0 +1,1231 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Gestión de Empleados",
+    "description": "CRUD transaccional de empleados, direcciones y salarios.",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/health/live": {
+      "get": {
+        "tags": [
+          "Salud"
+        ],
+        "summary": "Live",
+        "operationId": "live_health_live_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "tags": [
+          "Salud"
+        ],
+        "summary": "Ready",
+        "operationId": "ready_health_ready_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/token": {
+      "post": {
+        "tags": [
+          "Autenticación"
+        ],
+        "summary": "Login",
+        "operationId": "login_api_v1_auth_token_post",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_login_api_v1_auth_token_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "tags": [
+          "Autenticación"
+        ],
+        "summary": "Me",
+        "operationId": "me_api_v1_auth_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserRead"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/employees": {
+      "get": {
+        "tags": [
+          "Empleados"
+        ],
+        "summary": "List Employees",
+        "operationId": "list_employees_api_v1_employees_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Name"
+            }
+          },
+          {
+            "name": "dpi",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[0-9]{13}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Dpi"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployeePage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Empleados"
+        ],
+        "summary": "Create Employee",
+        "operationId": "create_employee_api_v1_employees_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployeeWrite"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployeeRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/employees/summary": {
+      "get": {
+        "tags": [
+          "Empleados"
+        ],
+        "summary": "Employee Summary",
+        "operationId": "employee_summary_api_v1_employees_summary_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployeeSummaryRead"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/employees/{employee_id}": {
+      "get": {
+        "tags": [
+          "Empleados"
+        ],
+        "summary": "Get Employee",
+        "operationId": "get_employee_api_v1_employees__employee_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "employee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Employee Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployeeRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Empleados"
+        ],
+        "summary": "Replace Employee",
+        "operationId": "replace_employee_api_v1_employees__employee_id__put",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "employee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Employee Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployeeWrite"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployeeRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Empleados"
+        ],
+        "summary": "Delete Employee",
+        "operationId": "delete_employee_api_v1_employees__employee_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "employee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Employee Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/employees/{employee_id}/salary": {
+      "patch": {
+        "tags": [
+          "Empleados"
+        ],
+        "summary": "Update Salary",
+        "operationId": "update_salary_api_v1_employees__employee_id__salary_patch",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "employee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Employee Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SalaryPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployeeRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AddressDTO": {
+        "properties": {
+          "line1": {
+            "type": "string",
+            "maxLength": 250,
+            "minLength": 1,
+            "title": "Line1"
+          },
+          "municipality": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Municipality"
+          },
+          "department": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Department"
+          },
+          "country": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}$",
+            "title": "Country",
+            "default": "GT"
+          },
+          "line2": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 250,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Line2"
+          },
+          "postal_code": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 12,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Postal Code"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "line1",
+          "municipality",
+          "department"
+        ],
+        "title": "AddressDTO"
+      },
+      "Body_login_api_v1_auth_token_post": {
+        "properties": {
+          "grant_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^password$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grant Type"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "title": "Password"
+          },
+          "scope": {
+            "type": "string",
+            "title": "Scope",
+            "default": ""
+          },
+          "client_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Id"
+          },
+          "client_secret": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "format": "password",
+            "title": "Client Secret"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "Body_login_api_v1_auth_token_post"
+      },
+      "EmployeePage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/EmployeeRead"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "offset",
+          "limit"
+        ],
+        "title": "EmployeePage"
+      },
+      "EmployeeRead": {
+        "properties": {
+          "first_names": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "First Names"
+          },
+          "last_names": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Last Names"
+          },
+          "gender": {
+            "$ref": "#/components/schemas/Gender"
+          },
+          "marital_status": {
+            "$ref": "#/components/schemas/MaritalStatus"
+          },
+          "birth_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Birth Date"
+          },
+          "dpi": {
+            "type": "string",
+            "pattern": "^[0-9]{13}$",
+            "title": "Dpi"
+          },
+          "nit": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 2,
+            "pattern": "^[0-9]+[0-9K]$",
+            "title": "Nit"
+          },
+          "igss_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9-]+$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Igss Number"
+          },
+          "irtra_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9-]+$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Irtra Number"
+          },
+          "addresses": {
+            "items": {
+              "$ref": "#/components/schemas/AddressDTO"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Addresses"
+          },
+          "salary": {
+            "$ref": "#/components/schemas/SalaryDTO-Output"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "age": {
+            "type": "integer",
+            "title": "Age",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "first_names",
+          "last_names",
+          "gender",
+          "marital_status",
+          "birth_date",
+          "dpi",
+          "nit",
+          "addresses",
+          "salary",
+          "id",
+          "created_at",
+          "updated_at",
+          "age"
+        ],
+        "title": "EmployeeRead"
+      },
+      "EmployeeSummaryRead": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "igss_count": {
+            "type": "integer",
+            "title": "Igss Count"
+          },
+          "irtra_count": {
+            "type": "integer",
+            "title": "Irtra Count"
+          },
+          "address_count": {
+            "type": "integer",
+            "title": "Address Count"
+          },
+          "genders": {
+            "items": {
+              "$ref": "#/components/schemas/GenderCountRead"
+            },
+            "type": "array",
+            "title": "Genders"
+          },
+          "salaries": {
+            "items": {
+              "$ref": "#/components/schemas/SalarySummaryRead"
+            },
+            "type": "array",
+            "title": "Salaries"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "total",
+          "igss_count",
+          "irtra_count",
+          "address_count",
+          "genders",
+          "salaries"
+        ],
+        "title": "EmployeeSummaryRead"
+      },
+      "EmployeeWrite": {
+        "properties": {
+          "first_names": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "First Names"
+          },
+          "last_names": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Last Names"
+          },
+          "gender": {
+            "$ref": "#/components/schemas/Gender"
+          },
+          "marital_status": {
+            "$ref": "#/components/schemas/MaritalStatus"
+          },
+          "birth_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Birth Date"
+          },
+          "dpi": {
+            "type": "string",
+            "pattern": "^[0-9]{13}$",
+            "title": "Dpi"
+          },
+          "nit": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 2,
+            "pattern": "^[0-9]+[0-9K]$",
+            "title": "Nit"
+          },
+          "igss_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9-]+$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Igss Number"
+          },
+          "irtra_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9-]+$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Irtra Number"
+          },
+          "addresses": {
+            "items": {
+              "$ref": "#/components/schemas/AddressDTO"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Addresses"
+          },
+          "salary": {
+            "$ref": "#/components/schemas/SalaryDTO-Input"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "first_names",
+          "last_names",
+          "gender",
+          "marital_status",
+          "birth_date",
+          "dpi",
+          "nit",
+          "addresses",
+          "salary"
+        ],
+        "title": "EmployeeWrite"
+      },
+      "Gender": {
+        "type": "string",
+        "enum": [
+          "FEMALE",
+          "MALE",
+          "OTHER",
+          "UNSPECIFIED"
+        ],
+        "title": "Gender"
+      },
+      "GenderCountRead": {
+        "properties": {
+          "gender": {
+            "$ref": "#/components/schemas/Gender"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "gender",
+          "count"
+        ],
+        "title": "GenderCountRead"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "MaritalStatus": {
+        "type": "string",
+        "enum": [
+          "SINGLE",
+          "MARRIED",
+          "DIVORCED",
+          "WIDOWED",
+          "CIVIL_UNION"
+        ],
+        "title": "MaritalStatus"
+      },
+      "PayFrequency": {
+        "type": "string",
+        "enum": [
+          "MONTHLY",
+          "BIWEEKLY",
+          "WEEKLY"
+        ],
+        "title": "PayFrequency"
+      },
+      "Role": {
+        "type": "string",
+        "enum": [
+          "HR_ADMIN",
+          "EMPLOYEE_VIEWER"
+        ],
+        "title": "Role"
+      },
+      "SalaryDTO-Input": {
+        "properties": {
+          "base_amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,12}|(?=[\\d.]{1,15}0*$)\\d{0,12}\\.\\d{0,2}0*$)"
+              }
+            ],
+            "title": "Base Amount"
+          },
+          "bonus_amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,12}|(?=[\\d.]{1,15}0*$)\\d{0,12}\\.\\d{0,2}0*$)"
+              }
+            ],
+            "title": "Bonus Amount",
+            "default": "0.00"
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "default": "GTQ"
+          },
+          "pay_frequency": {
+            "$ref": "#/components/schemas/PayFrequency",
+            "default": "MONTHLY"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "base_amount"
+        ],
+        "title": "SalaryDTO"
+      },
+      "SalaryDTO-Output": {
+        "properties": {
+          "base_amount": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,12}|(?=[\\d.]{1,15}0*$)\\d{0,12}\\.\\d{0,2}0*$)",
+            "title": "Base Amount"
+          },
+          "bonus_amount": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,12}|(?=[\\d.]{1,15}0*$)\\d{0,12}\\.\\d{0,2}0*$)",
+            "title": "Bonus Amount",
+            "default": "0.00"
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "default": "GTQ"
+          },
+          "pay_frequency": {
+            "$ref": "#/components/schemas/PayFrequency",
+            "default": "MONTHLY"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "base_amount"
+        ],
+        "title": "SalaryDTO"
+      },
+      "SalaryPatch": {
+        "properties": {
+          "base_amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,12}|(?=[\\d.]{1,15}0*$)\\d{0,12}\\.\\d{0,2}0*$)"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Base Amount"
+          },
+          "bonus_amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,12}|(?=[\\d.]{1,15}0*$)\\d{0,12}\\.\\d{0,2}0*$)"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bonus Amount"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Z]{3}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "pay_frequency": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PayFrequency"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "SalaryPatch"
+      },
+      "SalarySummaryRead": {
+        "properties": {
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "pay_frequency": {
+            "$ref": "#/components/schemas/PayFrequency"
+          },
+          "employee_count": {
+            "type": "integer",
+            "title": "Employee Count"
+          },
+          "base_total": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Base Total"
+          },
+          "bonus_total": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Bonus Total"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "currency",
+          "pay_frequency",
+          "employee_count",
+          "base_total",
+          "bonus_total"
+        ],
+        "title": "SalarySummaryRead"
+      },
+      "TokenResponse": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "bearer"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "access_token"
+        ],
+        "title": "TokenResponse"
+      },
+      "UserRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "role": {
+            "$ref": "#/components/schemas/Role"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "username",
+          "role"
+        ],
+        "title": "UserRead"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "OAuth2PasswordBearer": {
+        "type": "oauth2",
+        "flows": {
+          "password": {
+            "scopes": {},
+            "tokenUrl": "/api/v1/auth/token"
+          }
+        }
+      }
+    }
+  }
+}

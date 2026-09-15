@@ -1,0 +1,19 @@
+$kind: http-request
+description: ""
+url: "{{base_url}}/api/v1/employees/{{employee_id}}"
+method: GET
+scripts:
+  - type: beforeRequest
+    code: |-
+      if (!pm.environment.get("employee_id")) {
+          pm.execution.setNextRequest(null);
+          pm.execution.skipRequest();
+          throw new Error("Primero ejecute 02 Crear empleado; falta employee_id.");
+      }
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test("HTTP 200", () => pm.response.to.have.status(200));
+      pm.test("ID correcto", () => pm.expect(pm.response.json().id).to.eql(pm.environment.get("employee_id")));
+    language: text/javascript
+order: 5000

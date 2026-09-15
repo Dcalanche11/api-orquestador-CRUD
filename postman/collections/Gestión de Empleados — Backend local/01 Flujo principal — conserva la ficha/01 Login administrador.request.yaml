@@ -1,0 +1,37 @@
+$kind: http-request
+description: Enviar usuario/contraseña de la CLI como formulario. Guarda automáticamente el token; no se necesita client_id/client_secret.
+url: "{{base_url}}/api/v1/auth/token"
+method: POST
+body:
+  type: urlencoded
+  content:
+    username: "{{admin_username}}"
+    password: "{{admin_password}}"
+auth:
+  type: noauth
+scripts:
+  - type: beforeRequest
+    code: |-
+      pm.environment.unset("admin_access_token");
+      if (!pm.environment.get("admin_username") || !pm.environment.get("admin_password")) {
+          pm.execution.setNextRequest(null);
+          pm.execution.skipRequest();
+          throw new Error("Complete admin_username y admin_password en el environment activo.");
+      }
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test("HTTP 200", () => pm.response.to.have.status(200));
+      if (pm.response.code === 200) {
+          const data = pm.response.json();
+          pm.test("JWT recibido", () => {
+              pm.expect(data.token_type).to.eql("bearer");
+              pm.expect(data.access_token).to.be.a("string").and.not.empty;
+          });
+          pm.environment.set("admin_access_token", data.access_token);
+      } else {
+          pm.environment.unset("admin_access_token");
+          pm.execution.setNextRequest(null);
+      }
+    language: text/javascript
+order: 1000

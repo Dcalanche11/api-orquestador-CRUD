@@ -1,0 +1,26 @@
+$kind: http-request
+name: "Salario negativo: 422"
+description: ""
+url: "{{base_url}}/api/v1/employees/{{employee_id}}/salary"
+method: PATCH
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "base_amount": "-1"
+    }
+scripts:
+  - type: beforeRequest
+    code: |-
+      if (!pm.environment.get("employee_id")) {
+          pm.execution.setNextRequest(null);
+          pm.execution.skipRequest();
+          throw new Error("Primero ejecute 02 Crear empleado; falta employee_id.");
+      }
+    language: text/javascript
+  - type: afterResponse
+    code: pm.test("HTTP 422", () => pm.response.to.have.status(422));
+    language: text/javascript
+order: 5000

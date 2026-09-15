@@ -1,0 +1,51 @@
+$kind: http-request
+description: ""
+url: "{{base_url}}/api/v1/employees/{{employee_id}}"
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "first_names": "Prueba Postman Editada",
+      "last_names": "Empleado Demo",
+      "gender": "FEMALE",
+      "marital_status": "SINGLE",
+      "birth_date": "1995-05-20",
+      "dpi": "{{demo_dpi}}",
+      "nit": "{{demo_nit}}",
+      "igss_number": "IGSS123",
+      "irtra_number": null,
+      "addresses": [
+        {
+          "line1": "Dirección actualizada desde Postman",
+          "line2": null,
+          "municipality": "Guatemala",
+          "department": "Guatemala",
+          "country": "GT",
+          "postal_code": "01001"
+        }
+      ],
+      "salary": {
+        "base_amount": "7000.00",
+        "bonus_amount": "250.00",
+        "currency": "GTQ",
+        "pay_frequency": "MONTHLY"
+      }
+    }
+scripts:
+  - type: beforeRequest
+    code: |-
+      if (!pm.environment.get("employee_id")) {
+          pm.execution.setNextRequest(null);
+          pm.execution.skipRequest();
+          throw new Error("Primero ejecute 02 Crear empleado; falta employee_id.");
+      }
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test("HTTP 200", () => pm.response.to.have.status(200));
+      pm.test("Nombre y dirección actualizados", () => { const d=pm.response.json(); pm.expect(d.first_names).to.eql("Prueba Postman Editada"); pm.expect(d.addresses[0].line1).to.eql("Dirección actualizada desde Postman"); });
+    language: text/javascript
+order: 6000

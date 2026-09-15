@@ -1,0 +1,27 @@
+{
+  "first_names": "Ana María",
+  "last_names": "López Pérez",
+  "gender": "FEMALE",
+  "marital_status": "SINGLE",
+  "birth_date": "1995-05-20",
+  "dpi": "1234567890101",
+  "nit": "1234567-8",
+  "igss_number": "IGSS123",
+  "irtra_number": null,
+  "addresses": [
+    {
+      "line1": "10 calle 2-30, zona 1",
+      "line2": null,
+      "municipality": "Guatemala",
+      "department": "Guatemala",
+      "country": "GT",
+      "postal_code": "01001"
+    }
+  ],
+  "salary": {
+    "base_amount": "6500.00",
+    "bonus_amount": "250.00",
+    "currency": "GTQ",
+    "pay_frequency": "MONTHLY"
+  }
+}

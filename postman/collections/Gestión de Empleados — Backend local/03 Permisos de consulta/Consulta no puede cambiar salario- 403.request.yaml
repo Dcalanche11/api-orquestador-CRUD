@@ -1,0 +1,30 @@
+$kind: http-request
+name: "Consulta no puede cambiar salario: 403"
+description: ""
+url: "{{base_url}}/api/v1/employees/{{employee_id}}/salary"
+method: PATCH
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "base_amount": "1.00"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{viewer_access_token}}"
+scripts:
+  - type: beforeRequest
+    code: |-
+      if (!pm.environment.get("employee_id")) {
+          pm.execution.setNextRequest(null);
+          pm.execution.skipRequest();
+          throw new Error("Primero ejecute 02 Crear empleado; falta employee_id.");
+      }
+    language: text/javascript
+  - type: afterResponse
+    code: pm.test("HTTP 403", () => pm.response.to.have.status(403));
+    language: text/javascript
+order: 6000

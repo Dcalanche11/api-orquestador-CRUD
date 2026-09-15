@@ -1,0 +1,36 @@
+$kind: http-request
+description: ""
+url: "{{base_url}}/api/v1/employees?name=Daniel&dpi={{demo_dpi}}&offset=0&limit=20"
+method: GET
+queryParams:
+  - key: name
+    value: Daniel
+    disabled: false
+    description: ""
+  - key: dpi
+    value: "{{demo_dpi}}"
+    disabled: false
+    description: ""
+  - key: offset
+    value: "0"
+    disabled: false
+    description: ""
+  - key: limit
+    value: "20"
+    disabled: false
+    description: ""
+scripts:
+  - type: beforeRequest
+    code: |-
+      if (!pm.environment.get("employee_id")) {
+          pm.execution.setNextRequest(null);
+          pm.execution.skipRequest();
+          throw new Error("Primero ejecute 02 Crear empleado; falta employee_id.");
+      }
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test("HTTP 200", () => pm.response.to.have.status(200));
+      pm.test("Encuentra al empleado creado", () => { const d=pm.response.json(); pm.expect(d.total).to.eql(1); pm.expect(d.items[0].id).to.eql(pm.environment.get("employee_id")); });
+    language: text/javascript
+order: 4000

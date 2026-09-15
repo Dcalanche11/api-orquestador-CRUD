@@ -1,0 +1,13 @@
+$kind: http-request
+description: ""
+url: "{{base_url}}/openapi.json"
+method: GET
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("HTTP 200", () => pm.response.to.have.status(200));
+      pm.test("Contrato disponible", () => pm.expect(pm.response.json()).to.have.property("openapi"));
+    language: text/javascript
+order: 3000

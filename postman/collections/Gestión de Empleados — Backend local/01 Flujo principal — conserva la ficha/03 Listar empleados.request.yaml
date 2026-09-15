@@ -1,0 +1,14 @@
+$kind: http-request
+description: ""
+url: "{{base_url}}/api/v1/employees?offset=0&limit=20"
+method: GET
+queryParams:
+  offset: "0"
+  limit: "20"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("HTTP 200", () => pm.response.to.have.status(200));
+      pm.test("Página válida", () => { const d=pm.response.json(); pm.expect(d.total).to.be.at.least(1); pm.expect(d.limit).to.eql(20); });
+    language: text/javascript
+order: 3000

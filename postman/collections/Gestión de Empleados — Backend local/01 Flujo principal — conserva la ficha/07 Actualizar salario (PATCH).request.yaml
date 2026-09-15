@@ -1,0 +1,28 @@
+$kind: http-request
+description: ""
+url: "{{base_url}}/api/v1/employees/{{employee_id}}/salary"
+method: PATCH
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "base_amount": "7500.25",
+      "bonus_amount": "300.00"
+    }
+scripts:
+  - type: beforeRequest
+    code: |-
+      if (!pm.environment.get("employee_id")) {
+          pm.execution.setNextRequest(null);
+          pm.execution.skipRequest();
+          throw new Error("Primero ejecute 02 Crear empleado; falta employee_id.");
+      }
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test("HTTP 200", () => pm.response.to.have.status(200));
+      pm.test("Salario actualizado", () => { const d=pm.response.json().salary; pm.expect(d.base_amount).to.eql("7500.25"); pm.expect(d.bonus_amount).to.eql("300.00"); pm.expect(d.currency).to.eql("GTQ"); });
+    language: text/javascript
+order: 7000

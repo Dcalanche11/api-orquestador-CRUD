@@ -1,0 +1,63 @@
+$kind: http-request
+description: Crea datos ficticios con DPI/NIT nuevos en cada envío. Guarda employee_id. Para inspeccionar las tablas, deténgase aquí antes de ejecutar DELETE.
+url: "{{base_url}}/api/v1/employees"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "first_names": "Daniel",
+      "last_names": "Calanche",
+      "gender": "MALE",
+      "marital_status": "SINGLE",
+      "birth_date": "1995-05-20",
+      "dpi": "{{demo_dpi}}",
+      "nit": "{{demo_nit}}",
+      "igss_number": "3007390010101",
+      "irtra_number": "3007390010101",
+      "addresses": [
+        {
+          "line1": "10 calle 2-30, zona 1",
+          "line2": null,
+          "municipality": "Guatemala",
+          "department": "Guatemala",
+          "country": "GT",
+          "postal_code": "01001"
+        }
+      ],
+      "salary": {
+        "base_amount": "6500.00",
+        "bonus_amount": "250.00",
+        "currency": "GTQ",
+        "pay_frequency": "MONTHLY"
+      }
+    }
+scripts:
+  - type: beforeRequest
+    code: |-
+      pm.environment.unset("employee_id");
+      pm.environment.unset("deleted_employee_id");
+      const stamp = Date.now().toString();
+      pm.environment.set("demo_dpi", stamp.slice(-13).padStart(13, "0"));
+      pm.environment.set("demo_nit", stamp + Math.floor(Math.random() * 1000).toString().padStart(3, "0"));
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test("HTTP 201", () => pm.response.to.have.status(201));
+      if (pm.response.code === 201) {
+          const data = pm.response.json();
+          pm.test("Ficha con ID, edad y relaciones", () => {
+              pm.expect(data.id).to.be.a("string").and.not.empty;
+              pm.expect(data.age).to.be.a("number");
+              pm.expect(data.addresses).to.have.lengthOf(1);
+              pm.expect(data.salary.base_amount).to.eql("6500.00");
+              pm.expect(data.dpi).to.eql(pm.environment.get("demo_dpi"));
+          });
+          pm.environment.set("employee_id", data.id);
+      } else {
+          pm.execution.setNextRequest(null);
+      }
+    language: text/javascript
+order: 2000

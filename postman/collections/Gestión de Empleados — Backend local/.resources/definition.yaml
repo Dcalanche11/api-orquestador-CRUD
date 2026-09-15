@@ -1,0 +1,8 @@
+$kind: collection
+description: Pruebas del backend FastAPI. Importe también Local.postman_environment.json. Configure admin_username/admin_password y ejecute por orden. El login guarda JWT y CREATE guarda employee_id. La carpeta 30 de permisos es opcional. La carpeta 90 elimina la ficha creada, conservando la auditoría. No contiene credenciales.
+auth:
+  - id: 4a1b5e53-0c32-4f4b-9efa-19343d5c1797
+    type: bearer
+    name: bearer auth
+    credentials:
+      token: "{{admin_access_token}}"

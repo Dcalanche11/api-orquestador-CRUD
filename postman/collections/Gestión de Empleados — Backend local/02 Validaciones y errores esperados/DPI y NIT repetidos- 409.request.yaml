@@ -1,0 +1,50 @@
+$kind: http-request
+name: "DPI y NIT repetidos: 409"
+description: ""
+url: "{{base_url}}/api/v1/employees"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "first_names": "Prueba Postman",
+      "last_names": "Empleado Demo",
+      "gender": "FEMALE",
+      "marital_status": "SINGLE",
+      "birth_date": "1995-05-20",
+      "dpi": "{{demo_dpi}}",
+      "nit": "{{demo_nit}}",
+      "igss_number": "IGSS123",
+      "irtra_number": null,
+      "addresses": [
+        {
+          "line1": "10 calle 2-30, zona 1",
+          "line2": null,
+          "municipality": "Guatemala",
+          "department": "Guatemala",
+          "country": "GT",
+          "postal_code": "01001"
+        }
+      ],
+      "salary": {
+        "base_amount": "6500.00",
+        "bonus_amount": "250.00",
+        "currency": "GTQ",
+        "pay_frequency": "MONTHLY"
+      }
+    }
+scripts:
+  - type: beforeRequest
+    code: |-
+      if (!pm.environment.get("employee_id")) {
+          pm.execution.setNextRequest(null);
+          pm.execution.skipRequest();
+          throw new Error("Primero ejecute 02 Crear empleado; falta employee_id.");
+      }
+    language: text/javascript
+  - type: afterResponse
+    code: pm.test("HTTP 409", () => pm.response.to.have.status(409));
+    language: text/javascript
+order: 3000

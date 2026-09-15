@@ -1,0 +1,12 @@
+$kind: http-request
+name: "Sin token: 401"
+description: ""
+url: "{{base_url}}/api/v1/employees"
+method: GET
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: pm.test("HTTP 401", () => pm.response.to.have.status(401));
+    language: text/javascript
+order: 1000

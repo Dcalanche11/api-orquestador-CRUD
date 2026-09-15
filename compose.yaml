@@ -1,0 +1,72 @@
+name: employee-management
+
+x-api: &api
+  build: ./backend
+  environment:
+    DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-employees}:${POSTGRES_PASSWORD:?Ejecute python3 scripts/init_env.py}@db:5432/${POSTGRES_DB:-employees}
+    JWT_SECRET: ${JWT_SECRET:?Ejecute python3 scripts/init_env.py}
+    CORS_ORIGINS: '${CORS_ORIGINS:-["http://localhost:5173"]}'
+    RATE_LIMIT_STORAGE_URI: redis://redis:6379/0
+
+services:
+  web:
+    build: ./frontend
+    ports:
+      - "127.0.0.1:5173:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:8080/"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-employees}
+      POSTGRES_USER: ${POSTGRES_USER:-employees}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Ejecute python3 scripts/init_env.py}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-55432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  migrate:
+    <<: *api
+    command: ["alembic", "upgrade", "head"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    <<: *api
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/ready')"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  postgres_data:
